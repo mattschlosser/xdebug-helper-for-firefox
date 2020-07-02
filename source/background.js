@@ -176,3 +176,20 @@ function isValueInArray(arr, val)
 
 	return false;
 }
+
+// fix
+function addForwardedForHeader(e) {
+	e.requestHeaders.push({
+		name: "X-Forwarded-For", 
+		value: "192.168.1.29"
+	})
+	return e;
+}
+
+chrome.webRequest.onBeforeSendHeaders.addListener(
+	addForwardedForHeader,
+	{
+		urls: ["https://centos/*"]
+	}, 
+	["blocking", "requestHeaders"]
+)
