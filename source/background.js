@@ -177,19 +177,21 @@ function isValueInArray(arr, val)
 	return false;
 }
 
-// fix
 function addForwardedForHeader(e) {
-	e.requestHeaders.push({
-		name: "X-Forwarded-For", 
-		value: "192.168.1.29"
-	})
+	let ip = localStorage["xdebugConnectBackIP"];
+	if (ip) {
+		e.requestHeaders.push({	
+			name: "X-Forwarded-For", 
+			value: ip
+		})
+	}
 	return e;
 }
 
 chrome.webRequest.onBeforeSendHeaders.addListener(
 	addForwardedForHeader,
 	{
-		urls: ["https://centos/*"]
+		urls: ["https://*/*"]
 	}, 
 	["blocking", "requestHeaders"]
 )
