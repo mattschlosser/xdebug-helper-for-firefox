@@ -107,6 +107,13 @@ chrome.commands.onCommand.addListener(function(command)
 					// If state is debugging (1) toggle to disabled (0), else toggle to debugging
 					var newState = (1 == response.status) ? 0 : 1;
 
+					// turn off connect-back-ip if enabled
+					if (newState) {
+						modifyOn();
+					} else {
+						modifyOff();
+					}
+
 					chrome.tabs.sendMessage(
 						tabs[0].id,
 						{
@@ -177,7 +184,8 @@ function isValueInArray(arr, val)
 	return false;
 }
 
-function addForwardedForHeader(e) {
+function addForwardedForHeader(e)
+{
 	let ip = localStorage["xdebugConnectBackIP"];
 	if (ip) {
 		e.requestHeaders.push({	
@@ -188,10 +196,20 @@ function addForwardedForHeader(e) {
 	return e;
 }
 
-chrome.webRequest.onBeforeSendHeaders.addListener(
-	addForwardedForHeader,
-	{
-		urls: ["https://*/*"]
-	}, 
-	["blocking", "requestHeaders"]
-)
+function mondifyOn()
+{
+	chrome.webRequest.onBeforeSendHeaders.addListener(
+		addForwardedForHeader,
+		{
+			urls: ["https://*/*"]
+		},
+		["blocking", "requestHeaders"]
+	)
+}
+
+function modifyOff()
+{
+	chrome.webRequest.onBeforeSendHeaders.removeListener(
+		addForwardedForHeader
+	}
+}
